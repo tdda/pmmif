@@ -1,0 +1,75 @@
+Data Description
+================
+
+PMM is primarily for describing metadata associated with datasets.
+However, it is also useful for it to be able to describe how data
+is stored. The data section allows this.
+
+Optional key: ``flatfile``
+--------------------------
+
+This describes data stored in a flat file (often referred to generically
+as "CSV" files, originally standing for *comma-separated file*, but now
+sometimes used even for files with other separators).
+
+name
+++++
+
+The name describes where to find the data on disk.
+It can be any string, and can be a full path
+(e.g. ``"/usr/local/data/hillstrom.txt"``) or a relative path
+(such as (``"hillstrom.txt"``)).
+
+format
+++++++
+
+This describes information about how the data is stored in the flat file.
+
+There are three mandatory keys:
+
+    * ``encoding`` (string): ``"UTF-8"`` is recommended.
+    * ``separator`` (string): Usually a single character, often ``","``.
+    * ``headerrowcount`` (integer): number of rows in the flat file before the data (most commonly containing field names).
+
+There are also optional keys:
+
+    * ``quote`` (string): Usually empty (``""``),
+       a single quote (``"'"``) or a double quote (``"\""``).
+       There is no provision for multiple quote characters at this stage.
+       It is recommended that flat-file readers based on PMM interpret
+       always accept unquoted strings even if a quote character is present.
+
+    * ``escape`` (string): Usually backslash (``"\\"``). The escape character
+      is used primarily to all the quote character and itself to be
+      included in strings by preceding them with the escape character.
+      If set to the empty string, there is no escaping.
+
+      Regardless of the setting of escape, flat file readers may choose to
+      accept escape sequences for special characters, especially ``\n``
+      for newline.
+
+    * ``nullmarker`` (string): This is used to describe how nulls (missing
+      values) are listed in the file. If not specifed at all, null values
+      are not allowed in the file. Often set to the empty string (``""``)
+      or a marker such as ``NULL``.
+
+    * ``dateformat`` (string): This describes the datestamp format used
+      in the file. When writing data, it is normally preferable to
+      use the same format for all datestamp fields. However, individual
+      fields can also specify a date format, which will override this
+      overall setting. This is necessary if a file already contains dates
+      in mixed formats.
+
+Future extensions
++++++++++++++++++
+
+  * End-of-line nulls (cf. excel)
+
+  * Bad encoding handling?
+
+  * Byte-order markers
+
+  * Strictness specifiers
+
+  * Literal newlines in files
+

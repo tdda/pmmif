@@ -1,0 +1,69 @@
+Field Descriptions
+==================
+
+Fields are described by a dictionary with some required and some optional keys. provision of all relevant keys is recommended, especially summary statistics
+such as min, man, nullcount, uniquevaluecount etc. is strongly recommnded.
+
+Required Keys for Field Descriptions
+------------------------------------
+
+  * ``name`` (string): the name of the field.   PMMIF does not
+    place any restrictions on the field names, but it is
+    recommended that they always start with a letter and contain
+    only letters, numbers and underscores for maximum cross-system
+    usablity. Field Names are case sensitive, but it is recommended
+    that multiple fields with names that differ only in capitalization
+    are not used, again to maximize cross-system compatibility.
+
+  * ``type`` (string): the type of the field.
+    PMMIF recognizes the following field types:
+
+      - ``boolean`` — values that are either ``true`` or ``false``
+      - ``integer`` — integer values, possibly signed
+      - ``real`` — floating-point values
+      - ``string`` — string values, encoded as UTF-8
+      - ``datestamp`` — a date-and-time stamp value, with or without a time zone, in  a format to be specified with another key, ``format``, that is required when the type is ``datestamp``.
+
+    These strings are the only allowed values for field types.
+
+  * ``role`` (string): the role that the field plays in modelling.
+    PMMIF requires that all fields be classified in one of the
+    following ways to make clear its role in modelling:
+
+      - ``independent`` — a value that can be used in the model as an input for making predictions (also known as a *left-hand* or a *predictor* variable)
+      - ``dependent`` — a value to be predicted by the model (also known as an *outcome*, an *objective*, a *target* or a *right-hand* variable).
+      - ``treatment`` — a variable that describes which of a number of treatments a customer, patient or user (record) received. The values are not mandated, but it is recommended that one treatment be nominated as the control, using the ``control`` key.   Treatment fields may be integers, strings or booleans; if not specified, 0, False, "c", "control" (in any case) will be preferred as control indicators.
+      - ``weight`` — some kind of weight field, such as a case weight.
+      - ``validation`` — an indicator of a fixed set of partitions of the data into different cross-validation segments.   No specific interpretation is put on the segments by PMMIF, though this can certainly be specified in notes.
+      - ``auxiliary`` — some other kind of field to be used as none of the above, but perhaps to be used; for example, this might be a customer value field, in cases where this is to be used neither for prediction nor as an outcome, but might be used in ROI calculation, for example.
+      - ``ignore`` – a field that should be discarded.
+
+Optional Keys for Field Descriptions
+------------------------------------
+
+There are various kinds of option keys that we may distinguish:
+
+Clarification Keys
+++++++++++++++++++
+
+  * ``tags``. Tags provide extra information afbout how to use or interpret the data in a field.   Recognized tag values are:
+      - ``categorical``: this applies to a string field or integer fields and indicates that the different values represent distinct categories that are not ordered but which can sensibly be used for analysis.
+      - ``ordinal``: for string fields, this indicates that the strings represent some kind of rank.   In this case, the ``values`` key should always be specified and should list the values in rank order, from low to high.
+      - ``unique``: this indicates that there are (should be) no duplicate values in the field
+      - ``maximize`` or ``minimize``: While the goal of predictive modelling is typically to fit the data, it is often the case that the records of interest are either the higher or lower values, and for reporting, it is often useful to know which.   A maximize tag means that the high values are of primary interest (e.g. for a response problem.   Correspondingly, ``minimize`` means that the low values are of more interest (e.g. for example, when customer attrition is marked as a 1).
+
+  * ``values``. 
+
+
+Summary Statistics
+++++++++++++++++++
+
+  * ``stats``
+
+Annotations
++++++++++++
+
+  * ``longname``
+  * ``description``
+
+

@@ -1,0 +1,47 @@
+Top-Level Structure
+===================
+
+Version 0.1 of the PMMIF format is only expressed as JSON as a
+dictionary with nested elements.
+Some elements are mandatory, while others are optional.
+The order of keys does not matter.
+Indentation and layout of the JSON PMMIF file does not matter,
+but it is strongly recommended that it is formatted using indentation
+of four spaces and separated elements on separate lines, as shown
+below, to aid human readability.
+
+All text elements are case-sensitive.
+
+The PMMIF file must be encoded as UTF-8 and must have the extension
+``.pmm``, and the flat file must also be encoded as UTF-8.
+
+
+Required Top-Level Keys
+-----------------------
+
+  * ``pmmversion`` (string): the version of PMMIF to which the file conforms
+  * ``recordcount`` (integer): the number of records in the dataset
+  * ``fields`` (list): a list of field descriptors as specified below
+
+
+
+Optional Top-Level Keys
+-----------------------
+
+  * ``data`` (string): information about the source and format of the data described in the data dictionary, most commonly a flat file
+
+  * ``name`` (string): a name for the dataset
+
+  * ``description`` (string): a description of the dataset (string)
+
+  * ``contributor`` (string): the contributor of the dataset
+
+  * ``fieldcount`` (integer): the number of fields.   Should match the length of the field list if specified.
+
+  * ``data`` (Data description object): information about a flat file
+    ("CSV file") containing the data.
+
+
+
+
+

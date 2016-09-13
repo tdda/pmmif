@@ -1,0 +1,83 @@
+{
+    "pmmversion": "0.1",
+    "name": "victorlo",
+    "recordcount": 99999,
+    "fieldcount": 8,
+    "fields": [
+        {
+            "name": "age",
+            "type": "real",
+            "role": "independent",
+            "tags": {},
+            "stats": {}
+        },
+        {
+            "name": "trade",
+            "type": "integer",
+            "role": "independent",
+            "tags": {
+                "categorical": null
+            },
+            "stats": {}
+        },
+        {
+            "name": "wealth",
+            "type": "real",
+            "role": "independent",
+            "tags": {},
+            "stats": {}
+        },
+        {
+            "name": "asset",
+            "type": "real",
+            "role": "independent",
+            "tags": {},
+            "stats": {}
+        },
+        {
+            "name": "homevalue",
+            "type": "real",
+            "role": "independent",
+            "tags": {},
+            "stats": {}
+        },
+        {
+            "name": "trt_flg",
+            "type": "integer",
+            "role": "treatment",
+            "tags": {},
+            "stats": {}
+        },
+        {
+            "name": "respond",
+            "type": "integer",
+            "role": "dependent",
+            "tags": {},
+            "stats": {}
+        },
+        {
+            "name": "trn_flg",
+            "type": "integer",
+            "role": "validation",
+            "tags": {},
+            "stats": {}
+        }
+    ],
+    "tags": {},
+    "data": {
+        "flatfile": {
+            "name": "VictorLoDRA.dat",
+            "format": {
+                "encoding": "UTF-8",
+                "separator": ",",
+                "quote": "\"",
+                "escape": "\\",
+                "nullmarker": "",
+                "headerrowcount": 1
+            }
+        }
+    },
+    "description": "Synthetic dataset for True Lift paper",
+    "creator": "Victor Lo",
+    "permissions": "Public"
+}

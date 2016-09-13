@@ -1,0 +1,136 @@
+Overview of the Predictive Modelling Metadata Interchange Format
+================================================================
+
+The Predictive Modelling Metadata Interchange Format (PMMIF) is designed
+to facilitate the exchange of data for use in predictive modelling.
+
+There are two initial use cases it seeks to support:
+
+  * datasets for conventional predictive modelling of integer, continuous
+    and categorical outcomes
+
+  * datasets for uplift modelling of integer and continuous outcomes
+
+PMMIF has the following goals:
+
+  * Capability to describe datasets fully and accurately
+  * Machine-readable metadata
+  * Initial expression in JSON, with future ability to support other representations such as XML, YAML, HTML etc.
+  * Reasonably readable in raw form by humans
+  * Enough extra metadata to dectect faulty reading of the data
+  * Ability to write programs to verify both well-formedness of the PMMIF metadata description and to verify that the data conforms to the specification contained in the metadata
+  * Extensibility
+  * Simple minimum requirements
+  * Inclusion of key structural information, e.g. the role that various fields play in modelling.
+  * Ability to describe all (or nearly all) of the datasets in the Machine Learning Repository at the University of California, Irvine, and also some example datasets for use with Uplift Modelling.
+  * Each ``.pmm`` file currently describes a single dataset, stored as a flat file, consisting of a number of records, each with a fixed set of named fields.   Later enhancements will allow multiple flat files to be documented together.
+
+
+Very Simple Example
+-------------------
+
+Here is a very simple example of a ``.pmm`` file in the PMMIF format,
+``hillstrom3.pmm``:
+::
+
+  {
+      "pmmversion": "0.1",
+      "name": "hillstrom",
+      "recordcount": 64000,
+      "fieldcount": 3,
+      "fields": [
+          {
+              "name": "recency",
+              "type": "integer",
+              "role": "independent",
+              "tags": [],
+              "stats": {
+                  "nnulls": 0,
+                  "nuniques": 12,
+                  "min": 1,
+                  "max": 12,
+                  "mean": 5.763734375
+              }
+          },
+          {
+              "name": "history_segment",
+              "type": "string",
+              "role": "independent",
+              "tags": [
+                  "ordinal"
+              ],
+              "stats": {
+                  "nnulls": 0,
+                  "nuniques": 7
+              },
+              "values": [
+                  "1) $0 - $100",
+                  "2) $100 - $200",
+                  "3) $200 - $350",
+                  "4) $350 - $500",
+                  "5) $500 - $750",
+                  "6) $750 - $1,000",
+                  "7) $1,000 +"
+              ]
+          },
+          {
+              "name": "conversion",
+              "type": "boolean",
+              "role": "dependent",
+              "tags": [],
+              "stats": {
+                  "nnulls": 0,
+                  "nuniques": 2,
+                  "min": 0,
+                  "max": 1,
+                  "mean": 0.00903125
+              }
+          },
+      ],
+      "data": {
+          "flatfile": {
+              "name": "hillstrom3.csv",
+              "format": {
+                  "separator": ",",
+                  "quote": "\"",
+                  "escape": "\\",
+                  "nullmarker": "",
+                  "headerrowcount": 1
+              }
+          }
+      }
+  }
+
+Note that not all of the data shown here is required for every PMMIF file.
+
+Validity and Well-Formedness
+----------------------------
+
+PMMIF borrows a useful pair of notions from XML,
+namely those of *well-formedness* and *validity*.
+
+A PMMIF (``.pmm``) file is well-formed if it conforms syntactically
+to this definition, i.e. if it is valid JSON, in UTF-8, contains all
+the required elements and the types and structures of all the elements
+are correct.   To be well-formed, an PMMIF file should also be
+internally consistent; for example, if a number of fields is specified,
+it should be the same as the number of fields actually described in the
+file.   More generally, a ``.pmm`` file is well-formed if there are
+no errors that can be detected without looking at the datafiles it
+describes.
+
+By contrast, an PMMIF file is valid only if the datafiles it
+refers to exist and are consistent with the metadata in the
+``.pmm`` file.
+
+
+Extensibility
+-------------
+
+Extra keys may be added to any of the dictionaries used to define PMMIF
+provided those keys begin with a capital letter.   This allows users to embed
+arbitrary extra information in a ``.pmm`` file without significantly compromising the ability of PMMIF checkers to detect errors such as mis-typed keys.
+
+Generation
+----------
+

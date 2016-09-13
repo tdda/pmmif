@@ -1,0 +1,170 @@
+{
+    "pmmversion": "0.1",
+    "name": "hillstrom",
+    "recordcount": 64000,
+    "fieldcount": 12,
+    "fields": [
+        {
+            "name": "recency",
+            "type": "integer",
+            "role": "independent",
+            "tags": {
+                "P": null
+            },
+            "stats": {}
+        },
+        {
+            "name": "history_segment",
+            "type": "string",
+            "role": "independent",
+            "tags": {
+                "P": null,
+                "ordinal": [
+                    "1) $0 - $100",
+                    "2) $100 - $200",
+                    "3) $200 - $350",
+                    "4) $350 - $500",
+                    "5) $500 - $750",
+                    "6) $750 - $1,000",
+                    "7) $1,000 +"
+                ]
+            },
+            "stats": {},
+            "values": [
+                "1) $0 - $100",
+                "2) $100 - $200",
+                "3) $200 - $350",
+                "4) $350 - $500",
+                "5) $500 - $750",
+                "6) $750 - $1,000",
+                "7) $1,000 +"
+            ]
+        },
+        {
+            "name": "history",
+            "type": "real",
+            "role": "independent",
+            "tags": {
+                "P": null
+            },
+            "stats": {}
+        },
+        {
+            "name": "mens",
+            "type": "boolean",
+            "role": "independent",
+            "tags": {
+                "P": null
+            },
+            "stats": {}
+        },
+        {
+            "name": "womens",
+            "type": "boolean",
+            "role": "independent",
+            "tags": {
+                "P": null
+            },
+            "stats": {}
+        },
+        {
+            "name": "zip_code",
+            "type": "string",
+            "role": "independent",
+            "tags": {
+                "P": null,
+                "categorical": null
+            },
+            "stats": {},
+            "values": [
+                "Rural",
+                "Surburban",
+                "Urban"
+            ]
+        },
+        {
+            "name": "newbie",
+            "type": "boolean",
+            "role": "independent",
+            "tags": {
+                "P": null
+            },
+            "stats": {}
+        },
+        {
+            "name": "channel",
+            "type": "string",
+            "role": "independent",
+            "tags": {
+                "P": null,
+                "categorical": null
+            },
+            "stats": {},
+            "values": [
+                "Multichannel",
+                "Phone",
+                "Web"
+            ]
+        },
+        {
+            "name": "segment",
+            "type": "string",
+            "role": "independent",
+            "tags": {
+                "P": null,
+                "V": null,
+                "categorical": null
+            },
+            "stats": {},
+            "values": [
+                "Mens E-Mail",
+                "No E-Mail",
+                "Womens E-Mail"
+            ]
+        },
+        {
+            "name": "visit",
+            "type": "boolean",
+            "role": "independent",
+            "tags": {
+                "P": null,
+                "role": "dependent"
+            },
+            "stats": {}
+        },
+        {
+            "name": "conversion",
+            "type": "boolean",
+            "role": "independent",
+            "tags": {
+                "O": null,
+                "P": null
+            },
+            "stats": {}
+        },
+        {
+            "name": "spend",
+            "type": "real",
+            "role": "independent",
+            "tags": {
+                "P": null,
+                "role": "dependent"
+            },
+            "stats": {}
+        }
+    ],
+    "tags": {},
+    "data": {
+        "flatfile": {
+            "name": "hillstrom.csv",
+            "format": {
+                "encoding": "UTF-8",
+                "separator": ",",
+                "quote": "\"",
+                "escape": "\\",
+                "nullmarker": "",
+                "headerrowcount": 1
+            }
+        }
+    }
+}
