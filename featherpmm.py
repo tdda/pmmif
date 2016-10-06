@@ -150,7 +150,7 @@ class Dataset(object):
         for any fields that only exist in the second one is added to the
         first one.
         """
-        self.df = self.df.append(other.df)
+        self.df = self.df.append(other.df, ignore_index=True)
         _reset_fields_from_dataframe(self, other.md)
 
 
