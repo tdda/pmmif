@@ -78,11 +78,6 @@ class Dataset(object):
               tagging, descriptions, etc.
         """
         self.df[name] = col
-        if not self.df[name].notnull().any():
-            if pmmtype == 'string':
-                self.df[name] = self.df[name].astype(str)
-            elif pmmtype == 'datestamp':
-                self.df[name] = self.df[name].astype(datetime.datetime)
         self.declare_field(name, pmmtype)
 
     def declare_field(self, name, pmmtype=None):
@@ -97,6 +92,12 @@ class Dataset(object):
         The type, if provided, must be one of the types described for
         add_field, above.
         """
+        if self.df[name].isnull().all():  # all null or no records
+            if pmmtype == 'string':
+                self.df[name] = self.df[name].astype(np.dtype('O'))
+            elif pmmtype == 'datestamp':
+                self.df[name] = (self.df[name]
+                                     .astype(np.dtype('datetime64[ns]')))
         fieldMetadata = _create_pmm_field(self.df[name], pmmtype=pmmtype)
         self.md.add_field(name, fieldMetadata)
 
@@ -151,7 +152,8 @@ class Dataset(object):
         first one.
         """
         self.df = self.df.append(other.df, ignore_index=True)
-        _reset_fields_from_dataframe(self, other.md)
+        _add_metadata_from_other_dataset(self.md, other.md)
+        _reset_fields_from_dataframe(self)
 
 
 def read_dataframe(featherpath):
@@ -329,40 +331,29 @@ def _pmm_type(col, pmmtype=None):
         raise TypeError('Unknown type: %s [%s]' % (s, repr(col.dtype)))
 
 
-def _reset_fields_from_dataframe(dataset, othermd=None):
+def _reset_fields_from_dataframe(dataset):
     """
     Make some effort to ensure that the metadata matches the data
     before writing.
     """
     df, md = dataset.df, dataset.md
     dfFieldnames = list(df)
-    dfFieldnameSet = set(dfFieldnames)
     mdFieldnames = [f.name for f in md.fields]
-    mdFieldnameSet = set(mdFieldnames)
 
-    if othermd:
-        # extend metadata to include fields from other dataset
-        othermdFieldnames = [f.name for f in othermd.fields]
-        othermdFieldnameSet = set(othermdFieldnames)
-        othermdOnlyFieldnames = othermdFieldnameSet - mdFieldnameSet
-        for f in othermdOnlyFieldnames:
-            md.fields.append(othermd[f])
-        mdFieldnames = [f.name for f in md.fields]
-        mdFieldnameSet = set(mdFieldnames)
+    dfOnlyFieldnames = set(dfFieldnames) - set(mdFieldnames)
+    mdOnlyFieldnames = set(mdFieldnames) - set(dfFieldnames)
 
-    dfOnlyFieldnames = dfFieldnameSet - mdFieldnameSet
-    mdOnlyFieldnames = mdFieldnameSet - dfFieldnameSet
     for f in dfOnlyFieldnames:
         md.fields.append(_create_pmm_field(df[f]))
     assert(mdOnlyFieldnames.intersection(set([f.name for f in md.fields]))
            == mdOnlyFieldnames)
+
+    # Remove metadata for fields that aren't in the dataframe
     for f in mdOnlyFieldnames:
-        if f in [fx.name for fx in md.fields]:
-            del md.fields[[fx.name for fx in md.fields].index(f)]
+        del md.fields[[fx.name for fx in md.fields].index(f)]
 
     orderOK = True
     for i, f in enumerate(list(md.fields)):
-#        f.type = _pmm_type(df[f.name])
         if not f.name == dfFieldnames[i]:
             orderOK = False
     if not orderOK:
@@ -370,3 +361,15 @@ def _reset_fields_from_dataframe(dataset, othermd=None):
     md.fieldcount = len(md.fields)
     md.recordcount = len(df)
 
+
+def _add_metadata_from_other_dataset(md, othermd):
+    """
+    Extend md with fields from othermd not present in md.
+    (No consistency checking.)
+    """
+    fields = [f.name for f in md.fields]
+    otherFields = [f.name for f in othermd.fields]
+    otherOnlyFields = set(otherFields) - set(fields)
+    for f in otherOnlyFields:
+        md.fields.append(othermd[f])
+    md.fieldcount = len(md.fields)
