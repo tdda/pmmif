@@ -143,6 +143,26 @@ class Dataset(object):
         """
         _reset_fields_from_dataframe(self)
 
+    def merge_metadata(self, other, fields=None):
+        """
+        After merging another dataset in (via pd.merge), we don't have any of
+        the metadata associated with the fields that have come in from that
+        other dataset. This function takes the 'other metadata' and brings it
+        into the metadata for the main dataset. The new metadata wins if the
+        fields exists in both if:
+            1. the fields parameter is left empty, or
+            2. the fields parameter is a list but field is not in the list
+
+        """
+        newfields = [fx.name for fx in other.md.fields]
+        for f in newfields:
+            if (fields is None) or (f in fields):
+                if f in [fx.name for fx in self.md.fields]:
+                    del self.md.fields[[fx.name
+                                        for fx in self.md.fields].index(f)]
+        _add_metadata_from_other_dataset(self.md, other.md)
+        _reset_fields_from_dataframe(self)
+
     def append(self, other):
         """
         Append another dataset to an existing one.
