@@ -10,6 +10,7 @@ from __future__ import division
 import os
 import datetime
 import numpy as np
+import sys
 
 try:
     import feather
@@ -23,6 +24,15 @@ PANDAS_BOOL_DTYPE = np.dtype('bool')
 PANDAS_FLOAT_DTYPE = np.dtype('float64')
 NULL_STRING = '∅'
 NULL_SUFFIX = '_' + NULL_STRING
+UTF8 = 'UTF-8'
+
+isPython2 = sys.version_info.major < 3
+if isPython2:
+    bytes_type = str                # type: type
+    unicode_type = unicode          # type: type
+else:
+    bytes_type = bytes
+    unicode_type = str
 
 
 class Dataset(object):
@@ -246,6 +256,9 @@ def _sanitize_problematical_all_null_columns(ds):
     nTransformed = 0
     fieldnames = list(df.columns)
     nRecords = len(df.index)
+    dfIsUnicode = fieldnames and type(fieldnames[0]) == unicode_type
+    fn = _unicode_definite if dfIsUnicode else _utf8_definite
+    null_suffix = fn(NULL_SUFFIX)
     for i, f in enumerate(fieldnames):
         if (df[f].dtype not in (PANDAS_STRING_DTYPE, PANDAS_BOOL_DTYPE)
                 or df[f].notnull().sum() > 0):  # includes bools with nulls
@@ -255,7 +268,7 @@ def _sanitize_problematical_all_null_columns(ds):
         typeChar = ('b' if md[f].type == 'boolean'
                         else 's' if md[f].type == 'string'
                         else 'u')
-        altname = f + NULL_SUFFIX + typeChar
+        altname = f + null_suffix + typeChar
         if altname in fieldnames:
             continue  # already there. Whatever...
             # restore any all-null string fields
@@ -277,9 +290,12 @@ def _recover_problematical_all_null_columns(ds):
     nTransformed = 0
     fieldnames = list(df.columns)
     nRecords = len(df.index)
+    dfIsUnicode = fieldnames and type(fieldnames[0]) == unicode_type
+    fn = _unicode_definite if dfIsUnicode else _utf8_definite
+    null_suffix = fn(NULL_SUFFIX)
     for i, f in enumerate(fieldnames):
-        if f[:-1].endswith(NULL_SUFFIX) and all(np.isnan(df[f])):
-            suffixLen = len(NULL_SUFFIX) + 1
+        if f[:-1].endswith(null_suffix) and all(np.isnan(df[f])):
+            suffixLen = len(null_suffix) + 1
             suffix = f[-suffixLen:]
             truename = f[:-suffixLen]
             typeChar  = suffix[-1]
@@ -393,3 +409,63 @@ def _add_metadata_from_other_dataset(md, othermd):
     for f in otherOnlyFields:
         md.fields.append(othermd[f])
     md.fieldcount = len(md.fields)
+
+
+def _unicode_definite(s):
+    """
+    Converts a string to unicode if it isn't.
+    Assumes encoding is UTF-8.
+    Stringifies (as unicode) non strings.
+    """
+    return unicode_type(s, UTF8) if type(s) == bytes_type else unicode_type(s)
+
+
+def _utf8_definite(s):
+    """
+    Converts a string to UTF-8 if it is unicode.
+    Otherwise just returns the string.
+    Stringifies non strings.
+    """
+    return s.encode(UTF8) if type(s) == unicode_type else bytes_type(s)
+
+
+def _utf8_definite_object(s):
+    """
+    Converts all unicode within scalar or object, recursively, to unicode.
+    Handles lists, tuples and dictionaries, as well as scalars.
+    """
+    if type(s) == unicode_type:
+        return s.encode(UTF8)
+    elif type(s) == list:
+        return [_utf8_definite_object(v) for v in s]
+    elif type(s) == tuple:
+        return tuple([_utf8_definite_object(v) for v in s])
+    elif type(s) == dict:
+        return {_utf8_definite_object(k): _utf8_definite_object(v)
+                for (k, v) in s.items()}
+    return s
+
+
+def _unicode_definite_object(s):
+    """
+    Converts all bytes within scalar or object, recursively, to unicode.
+    Handles lists, tuples and dictionaries, as well as scalars.
+    """
+    if type(s) == bytes_type:
+        return s.decode(UTF8)
+    elif type(s) == list:
+        return [_unicode_definite_object(v) for v in s]
+    elif type(s) == tuple:
+        return tuple([_unicode_definite_object(v) for v in s])
+    elif type(s) == dict:
+        return {unicode_definite_object(k): _unicode_definite_object(v)
+                for (k, v) in s.items()}
+    return s
+
+
+if isPython2:
+    _str_definite_object = _utf8_definite_object
+    _str_definite = _utf8_definite
+else:
+    _str_definite_object = _unicode_definite_object
+    _str_definite = _unicode_definite
