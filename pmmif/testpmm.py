@@ -13,8 +13,8 @@ import unittest
 
 from pprint import pprint as pp
 
-from pmm import (Metadata, Field, Stats, Data, FlatFile, FlatFileFormat,
-                 ROLE, TAG, load)
+from pmmif.pmm import (Metadata, Field, Stats, Data, FlatFile, FlatFileFormat,
+                       ROLE, TAG, load)
 
 HILLSTROM_PMM_VERSION = '0.1'
 
