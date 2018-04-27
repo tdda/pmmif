@@ -18,3 +18,9 @@ Classes for associating Pandas DataFrames with additional `type` and
 `tags` annotation metadata, including support for persisting additional
 metadata alongside `feather` datafiles.
 
+
+Documentation
+=============
+
+http://pmmif.readthedocs.io
+

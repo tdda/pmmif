@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Predictive Modelling Metadata Interchange Format'
-copyright = u'2012, Nicholas J. Radcliffe'
+copyright = u'2016-2018, Stochastic Solutions Limited'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
