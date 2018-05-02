@@ -360,6 +360,11 @@ def _pmm_type(col, pmmtype=None):
     elif s.startswith('float'):
         return 'real'
     elif s == 'object':
+        someindex = col.first_valid_index()
+        if someindex is not None:
+            somevalue = col[someindex]
+            if type(somevalue) is bool:
+                return 'boolean'
         return 'string'
     elif s.startswith('date'):
         return 'datestamp'
