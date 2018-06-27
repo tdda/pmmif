@@ -226,6 +226,9 @@ def write_dataframe(dataset, featherpath):
 
     df = _sanitize_problematical_all_null_columns(dataset)
     try:
+        # feather doesn't always write file correctly if it already exists
+        if os.path.exists(featherpath):
+            os.remove(featherpath)
         feather.write_dataframe(df, featherpath)
         dataset.md.save(pmmpath)
     except:
