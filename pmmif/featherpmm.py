@@ -368,6 +368,8 @@ def _pmm_type(col, pmmtype=None):
             somevalue = col[someindex]
             if type(somevalue) is bool:
                 return 'boolean'
+            elif type(somevalue) in (datetime.datetime, datetime.date):
+                return 'datestamp'
         return 'string'
     elif s.startswith('date'):
         return 'datestamp'
