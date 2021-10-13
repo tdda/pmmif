@@ -39,5 +39,5 @@ setup(
                                                      ['doc', 'data']),
     },
     zip_safe=False,
-    install_requires=['numpy>=1.9'],
+    install_requires=['numpy>=1.9','pandas==1.3.2'],
 )

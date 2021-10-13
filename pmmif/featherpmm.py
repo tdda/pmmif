@@ -10,6 +10,7 @@ from __future__ import division
 import os
 import datetime
 import numpy as np
+import pandas as pd
 import sys
 
 try:
@@ -33,7 +34,6 @@ if isPython2:
 else:
     bytes_type = bytes
     unicode_type = str
-
 
 class Dataset(object):
     """
@@ -195,9 +195,7 @@ def read_dataframe(featherpath):
     The Dataset object contains the Pandas dataframe in its df attribute,
     and the metadata in its md attribute.
     """
-    if feather is None:
-        raise Exception('Feather-format is not available')
-    df = feather.read_dataframe(featherpath)
+    df = pd.read_feather(featherpath)
     pmmpath, datasetname = _split_feather_path(featherpath)
     if os.path.exists(pmmpath):
         md = pmm.load(pmmpath)
@@ -216,8 +214,6 @@ def write_dataframe(dataset, featherpath):
     The Dataset object contains the Pandas dataframe in its df attribute,
     and the metadata in its md attribute.
     """
-    if feather is None:
-        raise Exception('Feather-format is not available')
     pmmpath, datasetname = _split_feather_path(featherpath)
     if dataset.md is None:
         dataset.md = _create_pmm_metadata(dataset.df, datasetname)
@@ -229,7 +225,7 @@ def write_dataframe(dataset, featherpath):
         # feather doesn't always write file correctly if it already exists
         if os.path.exists(featherpath):
             os.remove(featherpath)
-        feather.write_dataframe(df, featherpath)
+        pd.DataFrame(df).reset_index().to_feather(featherpath)
         dataset.md.save(pmmpath)
     except:
         # feather leaves dud files around if it fails to write
@@ -472,10 +468,9 @@ def _unicode_definite_object(s):
                 for (k, v) in s.items()}
     return s
 
-
-if isPython2:
-    _str_definite_object = _utf8_definite_object
-    _str_definite = _utf8_definite
-else:
-    _str_definite_object = _unicode_definite_object
-    _str_definite = _unicode_definite
+    if isPython2:
+        _str_definite_object = _utf8_definite_object
+        _str_definite = _utf8_definite
+    else:
+        _str_definite_object = _unicode_definite_object
+        _str_definite = _unicode_definite
