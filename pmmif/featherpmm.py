@@ -13,7 +13,7 @@ import numpy as np
 import sys
 
 try:
-    import feather
+    import pyarrow.feather as feather
 except ImportError:
     feather = None
 
@@ -197,7 +197,7 @@ def read_dataframe(featherpath):
     """
     if feather is None:
         raise Exception('Feather-format is not available')
-    df = feather.read_dataframe(featherpath)
+    df = feather.read_feather(featherpath)
     pmmpath, datasetname = _split_feather_path(featherpath)
     if os.path.exists(pmmpath):
         md = pmm.load(pmmpath)
@@ -229,7 +229,7 @@ def write_dataframe(dataset, featherpath):
         # feather doesn't always write file correctly if it already exists
         if os.path.exists(featherpath):
             os.remove(featherpath)
-        feather.write_dataframe(df, featherpath)
+        feather.write_feather(df, featherpath)
         dataset.md.save(pmmpath)
     except:
         # feather leaves dud files around if it fails to write
