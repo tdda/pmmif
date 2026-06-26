@@ -362,7 +362,7 @@ def _pmm_type(col, pmmtype=None):
         return 'integer'
     elif s.startswith('float'):
         return 'real'
-    elif s == 'object':
+    elif s == 'object' or s == 'str' or s.startswith('string'):
         someindex = col.first_valid_index()
         if someindex is not None:
             somevalue = col[someindex]

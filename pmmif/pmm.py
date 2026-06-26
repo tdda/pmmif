@@ -10,7 +10,7 @@ import datetime
 import sys
 from collections import OrderedDict, Counter
 
-PMM_VERSION = '0.1'
+PMM_VERSION = '0.2'
 DEFAULT_DATE_TAG_FORMAT = '%Y-%m-%d %H:%M:%S'
 
 if sys.version_info.major < 3:
